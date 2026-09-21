@@ -161,6 +161,19 @@ class GridGameGUI:
             self.canvas.create_oval(x1, y1, x1 + self.cell_size * 0.5, y1 + self.cell_size * 0.5, fill="#f59e0b",
                                     outline="#d97706")
 
+        # Render toxic traps as distinct purple diamonds so hazards are visible.
+        for tx, ty in self.env.toxic_traps:
+            center_x = (tx + 0.5) * self.cell_size
+            center_y = (self.env.height - ty - 0.5) * self.cell_size
+            radius = self.cell_size * 0.28
+            self.canvas.create_polygon(
+                center_x, center_y - radius,
+                center_x + radius, center_y,
+                center_x, center_y + radius,
+                center_x - radius, center_y,
+                fill="#9333ea", outline="#6b21a8", width=2,
+            )
+
         for ox, oy in self.env.opponents:
             offset = self.cell_size * 0.2
             x1 = ox * self.cell_size + offset

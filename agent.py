@@ -1,4 +1,7 @@
-# agent.py
+# Required for selecting one of the valid movement actions.
+import random
+
+
 class GreedyGridAgent:
     """A simple agent that tries to move around systematically to clear the grid."""
 
