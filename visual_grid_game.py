@@ -2,6 +2,7 @@
 import random
 import tkinter as tk
 from model_based_agent import ModelBasedAgent
+from simple_reflex_agent import SimpleReflexAgent
 
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 DIR_NAMES = ['N', 'E', 'S', 'W']

@@ -13,11 +13,13 @@ class ModelBasedAgent:
         self.visited = {(0, 0)}
         self.known_walls = set()
         self.last_action = None
+        # Retains sensor observations so decisions can use percept history.
+        self.percept_history = []
 
     def sense_and_act(self, percept: dict) -> str:
-       
-       
-       
+        # Update the internal sensor model before selecting a new action.
+        self.percept_history.append(dict(percept))
+
         if self.last_action == 'move_forward':
             dx, dy = DIRECTIONS[self.heading]
             self.pos = (self.pos[0] + dx, self.pos[1] + dy)

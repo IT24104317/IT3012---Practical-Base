@@ -1,4 +1,7 @@
 # agent.py
+import random
+
+
 class GreedyGridAgent:
     """A simple agent that tries to move around systematically to clear the grid."""
 
@@ -8,5 +11,5 @@ class GreedyGridAgent:
     def sense_and_act(self, percept: dict) -> str:
         # If standing directly on food, or just wander / move towards coordinates
         pos = percept['agent_pos']
-        # Simple heuristic or fallback random sweep
+        # Choose a valid fallback movement action for the small grid simulator.
         return random.choice(self.actions_pool)
