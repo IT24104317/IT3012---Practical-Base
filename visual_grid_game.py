@@ -234,7 +234,8 @@ class GridGameGUI:
 
 if __name__ == "__main__":
     
-    ACTIVE_ALGO = "DFS"
+    # Run the Lab 04 informed-search demonstration with A* by default.
+    ACTIVE_ALGO = "AStar"
 
     agent = SearchAgent(active_algo=ACTIVE_ALGO)
 
