@@ -12,9 +12,10 @@ STEP_ACTIONS = {
 
 class SearchAgent:
 
-    def __init__(self, active_algo='DFS'):
-        self.plan = []                 
-        self.active_algo = active_algo 
+    def __init__(self, active_algo='BFS'):
+        self.plan = []
+        # Lab 03 starts with BFS; pass DFS or UCS to compare strategies.
+        self.active_algo = active_algo
 
     
     def sense_and_act(self, percept: dict) -> str:
