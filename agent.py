@@ -2,6 +2,7 @@
 from collections import deque
 import heapq
 import math
+from logic_engine import KnowledgeBase
 
 STEP_ACTIONS = {
     (0, 1): 'Up',
@@ -17,6 +18,9 @@ class SearchAgent:
         self.plan = []
         # Lab 03 starts with BFS; pass DFS or UCS to compare strategies.
         self.active_algo = active_algo
+        self.kb = KnowledgeBase()
+        self.kb.tell_rule(['TargetVisible', 'HasDust'], 'SafeToEngage')
+        self.kb.tell_rule(['SafeToEngage', 'BloodseekerMissing'], 'Retreat')
 
     
     def sense_and_act(self, percept: dict) -> str:
@@ -35,7 +39,14 @@ class SearchAgent:
                 self.plan = self.ucs_search(start, goal, walls, grid)
             # A* combines the travel cost with a heuristic estimate to the goal.
             elif self.active_algo == 'AStar':
-                self.plan = self.astar_search(start, goal, walls, grid)
+                # Logical constraints supplement physical walls during planning.
+                tile_facts = {
+                    (1, 0): ['TargetVisible', 'HasDust', 'BloodseekerMissing'],
+                    (0, 1): ['TargetVisible', 'HasDust'],
+                }
+                self.plan = self.astar_search(
+                    start, goal, walls, grid, tile_facts=tile_facts
+                )
             else:
                 self.plan = self.bfs_search(start, goal, walls, grid)
 
@@ -113,8 +124,10 @@ class SearchAgent:
         return []
 
     def astar_search(self, start_pos, goal_pos, walls, grid_size,
-                     heuristic_type='manhattan'):
+                     heuristic_type='manhattan', tile_facts=None):
         """Find a shortest path using f(n) = g(n) + h(n)."""
+        if tile_facts is None:
+            tile_facts = {}
         heuristic = (self.euclidean_distance if heuristic_type == 'euclidean'
                      else self.manhattan_distance)
         start_h = heuristic(start_pos, goal_pos)
@@ -134,6 +147,16 @@ class SearchAgent:
             for action, neighbor in self._neighbors(current_pos, walls, grid_size):
                 if neighbor in reached_states:
                     continue
+
+                # A traversable tile may still be infeasible under the domain
+                # rules.  Facts are local to this candidate tile.
+                self.kb.clear_facts()
+                for fact in tile_facts.get(neighbor, []):
+                    self.kb.tell_fact(fact)
+                self.kb.forward_chain()
+                if 'Retreat' in self.kb.facts:
+                    continue
+
                 new_g_cost = g_cost + 1
                 if new_g_cost < best_cost.get(neighbor, float('inf')):
                     best_cost[neighbor] = new_g_cost
